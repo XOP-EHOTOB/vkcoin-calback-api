@@ -156,7 +156,7 @@ module.exports = class VKCOIN {
   }
 
   format(amount) {
-    return (amount / 1000)
+    return (amount / 1000000)
       .toLocaleString()
       .replace(/,/g, " ")
       .replace(/\./g, ",");
