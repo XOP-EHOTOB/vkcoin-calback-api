@@ -156,9 +156,6 @@ module.exports = class VKCOIN {
   }
 
   format(amount) {
-    return (amount / 1000)
-      .toLocaleString()
-      .replace(/,/g, " ")
-      .replace(/\./g, ",");
+    return (amount / 1000).toLocaleString('de-DE').replace(/\./g, " ")
   }
 };
