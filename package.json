@@ -12,6 +12,9 @@
     "api",
     "coins"
   ],
+  "dependencies": {
+    "prequest": "^1.0.0"
+  },
   "author": "XOP EHOTOB <хор-енотов.рф>",
   "license": "ISC"
 }
