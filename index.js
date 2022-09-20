@@ -11,12 +11,8 @@ module.exports = class VKCOIN {
 
   async startServer(props) {
     if (!props.server)
-      return console.error(
-        "Start server Error: не указан сервер для получения событий!"
-      );
-    if (props.port) {
-      port = props.port;
-    }
+      return console.error( "Start server Error: не указан сервер для получения событий!");
+    if (props.port) { port = props.port;}
     try {
       let connect = await request({
         method: "POST",
@@ -31,17 +27,16 @@ module.exports = class VKCOIN {
       if (connect.response === "ON") {
         console.log("Успешное подключение к VK Coin");
       } else {
-        console.error("Ошибка: подключения к VK Coin:", connect.error);
+        console.error("Ошибка: подключения к VK Coin", connect.error || '500');
       }
     } catch (e) {
-      throw new Error("Ошибка: Не удалось подключится к VK Coin:", e)
+      throw new Error("Ошибка: Не удалось подключится к VK Coin", e.message || '500')
     }
   }
 
   async startPolling(hand) {
     try {
-      http
-        .createServer((req, res) => {
+      http.createServer((req, res) => {
           if (req.method === "POST") {
             let body = "";
             req.on("data", (chunk) => {
@@ -54,17 +49,16 @@ module.exports = class VKCOIN {
               hand(event);
             });
           }
-        })
-        .listen(port);
+        }).listen(port);
     } catch (err) {
-      throw new Error("Ошибка: Не удалось подключится к VK Coin:", e)
+      throw new Error("Ошибка: Не удалось подключится к VK Coin", e.message || "500")
     }
   }
 
   async send(toId, amount, fromShop) {
     if (!fromShop) {
       try {
-        await request({
+        let req = await request({
           method: "POST",
           url: "https://coin-without-bugs.vkforms.ru/merchant/send/",
           form: {
@@ -75,12 +69,14 @@ module.exports = class VKCOIN {
           },
           headers: { "Content-type": "Content-Type: application/json" },
         });
+        if (req.error) throw new Error("Ошибка", req.error || 500)
+        return req
       } catch (e) {
-        throw new Error("Ошибка: ", e)
+        throw new Error("Ошибка", e.message || 500)
       }
     } else {
       try {
-        await request({
+        let req = await request({
           method: "POST",
           url: "https://coin-without-bugs.vkforms.ru/merchant/send/",
           form: {
@@ -92,6 +88,8 @@ module.exports = class VKCOIN {
           },
           headers: { "Content-type": "Content-Type: application/json" },
         });
+        if (req.error) throw new Error("Ошибка", req.error || 500)
+        return req
       } catch (e) {
         console.error(e);
         throw new Error("Ошибка: ", e)
@@ -111,6 +109,7 @@ module.exports = class VKCOIN {
         },
         headers: { "Content-type": "Content-Type: application/json" },
       });
+      if (balance.error) throw new Error("Ошибка", req.error || 500)
       return balance;
     } catch (e) {
       throw new Error("Ошибка: ", e)
@@ -127,16 +126,9 @@ module.exports = class VKCOIN {
           key: this.key,
           name: name,
         },
-        headers: { "Content-type": "Content-Type: application/json" },
+        headers: { "Content-type": "Content-Type: application/json" }
       });
-      if (res.response === 1) {
-        console.log("Название магазина успешно установлно:", name);
-      } else {
-        console.error(
-          "Ошибка: Попробуйте установить название магазина позже:",
-          res
-        );
-      }
+      if (res.error) throw new Error("Ошибка", req.error || 500)
       return res;
     } catch (e) {
       throw new Error("Ошибка: ", e)
@@ -145,14 +137,12 @@ module.exports = class VKCOIN {
 
   getLink(amount, payload, fixed) {
     if (!this.id)
-      return console.error(`Ошибка: Для начала необходимо авторизироваться!`);
+      return console.error(`Ошибка: Для начала необходимо авторизироваться!`)
     if (isNaN(+amount))
-      return console.error(`Ошибка: Недопустимый формат VK Coin!`);
-    let link = `vk.com/coin#x${this.id}_${+amount}_${payload}`;
-    if (fixed) {
-      link += "_1";
-    }
-    return link;
+      return console.error(`Ошибка: Недопустимый формат VK Coin!`)
+    let link = `vk.com/coin#x${this.id}_${+amount}_${payload}`
+    if (fixed) { link += "_1" }
+    return link
   }
 
   format(amount) {
