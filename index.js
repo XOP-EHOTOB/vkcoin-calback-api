@@ -24,7 +24,6 @@ module.exports = class VKCOIN {
         },
         headers: { "Content-type": "Content-Type: application/json" },
       });
-      if (connect.error) throw new Error(connect.error.message || "Неизвестная ошибка!")
       return connect
     } catch (e) {
       throw new Error(e.message || "Ошибка сервера!")
@@ -66,7 +65,6 @@ module.exports = class VKCOIN {
           },
           headers: { "Content-type": "Content-Type: application/json" },
         });
-        if (req.error) throw new Error(req.error.message || "Неизвестная ошибка!")
         return req
       } catch (e) {
         console.error(e.message);
@@ -86,7 +84,6 @@ module.exports = class VKCOIN {
           },
           headers: { "Content-type": "Content-Type: application/json" },
         });
-        if (req.error) throw new Error(req.error.message || "Неизвестная ошибка!")
         return req
       } catch (e) {
         throw new Error(e.message || "Ошибка сервера!")
@@ -106,7 +103,6 @@ module.exports = class VKCOIN {
         },
         headers: { "Content-type": "Content-Type: application/json" },
       });
-      if (balance.error) throw new Error(balance.error.message || "Неизвестная ошибка!")
       return balance;
     } catch (e) {
       throw new Error(e.message || "Ошибка сервера!")
@@ -125,7 +121,6 @@ module.exports = class VKCOIN {
         },
         headers: { "Content-type": "Content-Type: application/json" }
       });
-      if (req.error) throw new Error(req.error.message || "Неизвестная ошибка!")
       return req
     } catch (e) {
       throw new Error(e.message || "Ошибка сервера!")
