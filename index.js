@@ -1,4 +1,4 @@
-var request = require("prequest");
+const request = require("prequest");
 const http = require("http");
 
 let port = 1234;
@@ -24,13 +24,10 @@ module.exports = class VKCOIN {
         },
         headers: { "Content-type": "Content-Type: application/json" },
       });
-      if (connect.response === "ON") {
-        console.log("Успешное подключение к VK Coin");
-      } else {
-        console.error("Ошибка: подключения к VK Coin", connect.error || '500');
-      }
+      if (connect.error) throw new Error(connect.error.message || "Неизвестная ошибка!")
+      return connect
     } catch (e) {
-      throw new Error("Ошибка: Не удалось подключится к VK Coin", e.message || '500')
+      throw new Error(e.message || "Ошибка сервера!")
     }
   }
 
@@ -51,7 +48,7 @@ module.exports = class VKCOIN {
           }
         }).listen(port);
     } catch (err) {
-      throw new Error("Ошибка: Не удалось подключится к VK Coin", e.message || "500")
+      throw new Error(e.message || "Ошибка сервера!")
     }
   }
 
@@ -69,10 +66,11 @@ module.exports = class VKCOIN {
           },
           headers: { "Content-type": "Content-Type: application/json" },
         });
-        if (req.error) throw new Error("Ошибка", req.error || 500)
+        if (req.error) throw new Error(req.error.message || "Неизвестная ошибка!")
         return req
       } catch (e) {
-        throw new Error("Ошибка", e.message || 500)
+        console.error(e.message);
+        throw new Error(e.message || "Ошибка сервера!")
       }
     } else {
       try {
@@ -88,11 +86,10 @@ module.exports = class VKCOIN {
           },
           headers: { "Content-type": "Content-Type: application/json" },
         });
-        if (req.error) throw new Error("Ошибка", req.error || 500)
+        if (req.error) throw new Error(req.error.message || "Неизвестная ошибка!")
         return req
       } catch (e) {
-        console.error(e);
-        throw new Error("Ошибка: ", e)
+        throw new Error(e.message || "Ошибка сервера!")
       }
     }
   }
@@ -109,16 +106,16 @@ module.exports = class VKCOIN {
         },
         headers: { "Content-type": "Content-Type: application/json" },
       });
-      if (balance.error) throw new Error("Ошибка", req.error || 500)
+      if (balance.error) throw new Error(balance.error.message || "Неизвестная ошибка!")
       return balance;
     } catch (e) {
-      throw new Error("Ошибка: ", e)
+      throw new Error(e.message || "Ошибка сервера!")
     }
   }
 
   async shopName(name) {
     try {
-      let res = await request({
+      let req = await request({
         method: "POST",
         url: "https://coin-without-bugs.vkforms.ru/merchant/set/",
         form: {
@@ -128,18 +125,18 @@ module.exports = class VKCOIN {
         },
         headers: { "Content-type": "Content-Type: application/json" }
       });
-      if (res.error) throw new Error("Ошибка", req.error || 500)
-      return res;
+      if (req.error) throw new Error(req.error.message || "Неизвестная ошибка!")
+      return req
     } catch (e) {
-      throw new Error("Ошибка: ", e)
+      throw new Error(e.message || "Ошибка сервера!")
     }
   }
 
   getLink(amount, payload, fixed) {
     if (!this.id)
-      return console.error(`Ошибка: Для начала необходимо авторизироваться!`)
+      throw new Error(`Ошибка: Для начала необходимо авторизироваться!`)
     if (isNaN(+amount))
-      return console.error(`Ошибка: Недопустимый формат VK Coin!`)
+      throw new Error(`Ошибка: Недопустимый формат VK Coin!`)
     let link = `vk.com/coin#x${this.id}_${+amount}_${payload}`
     if (fixed) { link += "_1" }
     return link
@@ -148,4 +145,4 @@ module.exports = class VKCOIN {
   format(amount) {
     return (amount / 1000).toLocaleString('de-DE').replace(/\./g, " ")
   }
-};
+}
