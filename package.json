@@ -1,6 +1,6 @@
 {
   "name": "vkcoin-callback-api",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Модуль для работы с методами VK Coin api",
   "main": "index.js",
   "scripts": {
