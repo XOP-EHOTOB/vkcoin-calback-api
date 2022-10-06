@@ -13,7 +13,8 @@
     "coins"
   ],
   "dependencies": {
-    "prequest": "^1.0.0"
+    "axios": "^0.27.2",
+    "js-md5": "^0.7.3"
   },
   "author": "XOP EHOTOB <хор-енотов.рф>",
   "license": "ISC"
